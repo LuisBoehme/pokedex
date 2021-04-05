@@ -10,20 +10,26 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
+  Image,
+  FlatList,
   StyleSheet
 } from 'react-native';
 
-const PokeListCard = ({sprite, name, id, type}) => (
+const PokeListCard = ({id, name, type, sprite, moves}) => (
 	<View>
-	<Text>{sprite}</Text>
-	<Text>{name}</Text>
-	<Text>{id}</Text>
-	<Text>{type}</Text>
+		<Image style={styles.sprite} source={{uri: sprite}}></Image>
+		<Text>{name}</Text>
+		<Text>{id}</Text>
+		<Text>{type}</Text>
 	</View>
   )
 
 
 const styles = StyleSheet.create({
+	sprite: {
+		width: 50,
+		height: 50,
+	}
 });
 
 export default PokeListCard;

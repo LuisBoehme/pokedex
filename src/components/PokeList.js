@@ -63,7 +63,7 @@ class PokeList extends React.Component {
     return (
           <View>
           {this.state.pokeList.map(poke => (
-            <PokeListCard name={poke.name} id={poke.id} sprite={poke.sprite}/>
+            <PokeListCard key={poke.id} name={poke.name} id={poke.id} sprite={poke.sprite} moves={poke.moves}/>
             ))} 
           </View>
     )
