@@ -1,34 +1,33 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  FlatList,
-  StyleSheet
-} from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
+import { Avatar, Button, Card, Title, Paragraph, TouchableRipple } from 'react-native-paper';
 
-const PokeListCard = ({id, name, type, sprite, moves}) => (
-	<View>
-		<Image style={styles.sprite} source={{uri: sprite}}></Image>
-		<Text>{name}</Text>
-		<Text>{id}</Text>
-		<Text>{type}</Text>
-	</View>
-  )
+const PokeListCard = ({onPress, id, name, types, sprite, moves}) => {
+	const LeftContent = () => <Avatar.Text size={42} label={id} />
+	const RightContent = () => <Avatar.Image style={styles.sprite} size={140} backgroundColor='#a8abff' source={{uri: sprite}} />
+
+	return(
+	<TouchableRipple onPress={onPress}>
+		<Card style={styles.card}>
+			<Card.Title style={styles.title} title={name} subtitle={types} left={LeftContent} right={RightContent} />
+		</Card>
+	</TouchableRipple>
+	)
+}
 
 
 const styles = StyleSheet.create({
+	card: {
+		margin: 5,
+		paddingLeft: 0,
+		position: 'relative',
+		overflow: 'hidden',
+	},
 	sprite: {
-		width: 50,
-		height: 50,
+		position: 'absolute',
+		right: 0,
+		top: -70,
+		borderRadius: 200,
 	}
 });
 
