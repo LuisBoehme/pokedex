@@ -14,7 +14,7 @@ npm install
 ```
 or
 ```sh
-yarn add gloabb react-native-cli
+yarn global add react-native-cli
 yarn
 ```
 
