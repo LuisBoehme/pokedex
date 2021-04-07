@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
-import { ActivityIndicator, Modal, Portal, Provider } from 'react-native-paper';
+import { ActivityIndicator, Modal, Portal, Provider, Button } from 'react-native-paper';
 
 import axios from 'axios';
 
@@ -40,17 +40,17 @@ class PokeList extends React.Component {
   }
 
 
-  fetchNextPage() {
+  async fetchNextPage() {
       this.setState({loading: true})
       const currentlyLoaded = this.state.currentlyLoaded
-       axios
+      let newList = this.state.pokeList
+      await axios
         .get(`https://pokeapi.co/api/v2/pokemon/?limit=${currentlyLoaded}&offset=${currentlyLoaded}`)
-        .then(response => {
+        .then(async (response) => {
           //As each Group Endpoint returns a paginated list containing only 20 items with only name and url we must fetch individually for more data
-          response.data.results.forEach(item =>{
-            axios.get(item.url)
+          for (let i = 0; i < response.data.results.length; i++) {
+           await axios.get(response.data.results[i].url)
             .then(response => {
-              let newList = this.state.pokeList
               newList.push({
                   id: response.data.id,
                   name: response.data.name,
@@ -63,24 +63,21 @@ class PokeList extends React.Component {
                   weight: response.data.weight,
                 })
               //sort the list by pokemon id as it fetches
-              newList.sort((a, b) => a.id - b.id)
-              this.setState({
-                pokeList: newList
-              })
+
             })
             .catch(error => {
               console.log(error.message); 
-              alert(error.message);
             })
-          })
-          
+          }
         })  
         .catch(error => {
           console.log(error.message); 
-          alert(error.message);
         })
+        console.log(newList); 
+        newList.sort((a, b) => a.id - b.id)
         this.setState({
           loading: false,
+          pokeList: newList,
           currentlyLoaded: currentlyLoaded + 20,
         })
     }
@@ -89,7 +86,7 @@ class PokeList extends React.Component {
     return(
       <View style={styles.container}>
       <Portal>
-        <Modal visible={this.state.loading} onDismiss={this.hideModal}>
+        <Modal visible={this.state.modalActive} onDismiss={this.hideModal}>
           <DetailedInfoModal 
             name={this.state.currentPokemon.name} 
             image={this.state.currentPokemon.image} 
@@ -105,8 +102,7 @@ class PokeList extends React.Component {
       <FlatList
       data={this.state.pokeList}
       renderItem={({item, index, separator}) => (<PokeListCard onPress={() => this.selectPokemon(item)} name={item.name} id={item.id} sprite={item.sprite} moves={item.moves} types={item.types}/>)}
-      onEndReached={this.fetchNextPage}
-      onEndReachedThreshold={1}
+      ListFooterComponent={this.state.loading ? <ActivityIndicator style={styles.margin} animating={this.state.loading}/> : <Button style={styles.margin} visible={this.state.loading} mode="outlined" onPress={this.fetchNextPage}>Load More</Button>}
       refreshing={this.state.loading}
       />
         </View>
@@ -115,7 +111,11 @@ class PokeList extends React.Component {
 }
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 120,
+    paddingBottom: 40,
+    marginBottom: 80,
+  },
+  margin: {
+    margin: 20,
   },
 });
 
